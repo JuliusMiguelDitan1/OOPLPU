@@ -3,6 +3,7 @@ import pygame
 
 from screen import Screen
 from world import World
+from dialogue import DialogueBox
 
 
 class Game:
@@ -20,6 +21,7 @@ class Game:
             "Defeat the enemies. Find the red potions!"
         )
 
+        self.dialogue = DialogueBox()
         self.show_inventory = False
         self.running = True
         self.won = False
@@ -35,7 +37,25 @@ class Game:
                 hero = self.world.hero
 
                 if event.key == pygame.K_ESCAPE:
-                    self.running = False
+                    if self.dialogue.active:
+                        self.dialogue.close()
+                    else:
+                         self.running = False
+
+                elif event.key == pygame.K_t:
+                    if self.dialogue.active:
+                        self.dialogue.advance()
+                    else:
+                        npc = self.world.nearest_npc()
+
+                        if npc:
+                            self.dialogue.start(npc)
+                        else:
+                            self.message = (
+                                "No NPC nearby to talk to."
+                            )
+                elif self.dialogue.active:
+                    continue  # Ignore other key presses while in dialogue
 
                 elif event.key == pygame.K_SPACE:
                     enemy = self.world.nearest_enemy()
@@ -82,7 +102,7 @@ class Game:
                     )
 
     def update(self, elapsed):
-        if self.won or self.lost:
+        if self.won or self.lost or self.dialogue.active:
             return
 
         keys = pygame.key.get_pressed()
@@ -137,7 +157,8 @@ class Game:
                 self.message,
                 self.show_inventory,
                 self.won,
-                self.lost
+                self.lost,
+                self.dialogue
             )
 
         pygame.quit()

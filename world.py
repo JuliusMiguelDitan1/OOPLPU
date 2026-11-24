@@ -3,7 +3,7 @@ import pygame
 
 from enemy import Enemy, FinalBoss
 from hero import Hero, Potion
-
+from dialogue import NPC 
 
 class World:
     def __init__(self, width, height):
@@ -39,6 +39,31 @@ class World:
             )
         ]
 
+        self.npcs = [
+            NPC(
+                "Guide",
+                135,
+                height // 2 - 75,
+                [
+                    "Welcome to Tiny Kingdom! Defeat the Slime, Goblin, and Final Boss.",
+                    "Help us and we will reward you with gold and potions.",
+                    "Press F for Power Strike when you have 10 mana, and H to drink a Potion."
+                ]
+            ),
+            NPC(
+                "Villager",
+                420,
+                140,
+                [   
+                    "HELP US PLEASE!! The Slime and Goblin are attacking our village!",
+                    "The Final Boss is even stronger, so be careful!"
+                    "Watch out for the Final Boss on the right side!",
+                    "Grab the red potions on the ground if your HP gets low."
+                ],
+                color=(100, 210, 230)
+            )
+        ]
+
         # Aggregation: World contains ground items
         self.ground_items = [
             {
@@ -50,6 +75,19 @@ class World:
                 "rect": pygame.Rect(620, 150, 24, 24)
             }
         ]
+
+    def nearest_npc(self, max_distance=75):
+        candidates = [
+            npc
+            for npc in self.npcs
+            if npc.distance_to_hero(self.hero)<= max_distance
+        ]
+
+        return min(
+            candidates,
+            key=lambda npc: npc.distance_to_hero(self.hero),
+            default=None
+        )
 
     def nearest_enemy(self, max_distance=75):
         candidates = [

@@ -43,7 +43,8 @@ class Screen:
         message,
         show_inventory=False,
         won=False,
-        lost=False
+        lost=False,
+        dialogue=None
     ):
         self.surface.fill((24, 32, 45))
 
@@ -131,6 +132,9 @@ class Screen:
                 2,
                 border_radius=5
             )
+        #NPCs
+        for npc in world.npcs:
+            npc.draw(self.surface, self.small_font)
 
         # Enemies
         for enemy in world.enemies:
@@ -165,7 +169,7 @@ class Screen:
 
         self.text(
             "WASD Move | SPACE Attack | F Power Strike | "
-            "E Collect | H Potion | I Inventory | ESC Quit",
+            "E Collect | H Potion | I Inventory | ESC Quit | T talk to NPC",
             18,
             self.height - 35,
             (220, 230, 240),
@@ -222,6 +226,13 @@ class Screen:
                 panel.x + 14,
                 panel.y + 75,
                 font=self.small_font
+            )
+
+        if dialogue and dialogue.active:
+            dialogue.draw(
+                self.surface,
+                self.font,
+                self.small_font
             )
 
         # Victory or defeat
